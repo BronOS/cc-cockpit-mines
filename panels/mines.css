@@ -213,6 +213,10 @@ body {
   border-radius: var(--cc-radius-s);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
 }
+.sizemenu[hidden] {
+  /* display: flex above would otherwise beat the hidden attribute and leave an empty box over Open/Flag. */
+  display: none;
+}
 .sizemenu button {
   all: unset;
   display: flex;
