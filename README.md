@@ -16,7 +16,7 @@ right zone (move it like any panel).
 
 Open every cell that holds no mine.
 
-- Pick the board in the size list: Small 9×9 with 10 mines, Medium 12×12 with 22, Large 16×16 with 40. Picking one, or
+- Pick the board in the size list: Small 9×9 with 10 mines, Medium 12×12 with 22, Large 16×16 with 40, Huge 24×24 with 99, Wide 30×16 with 99. Huge and Wide want a wide zone or a wider panel: cells never get smaller than 16 px, so in a narrow panel the board scrolls sideways. Picking one, or
   **New**, starts a new game. The size you picked last comes back next time.
 - Click opens a cell. The first click is always safe: neither it nor its neighbours hold a mine, so it opens an area.
 - A number is how many of the 8 cells around it hold a mine. A cell with none opens its neighbours by itself.

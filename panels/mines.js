@@ -53,6 +53,7 @@
       board.textContent = ''
       board.style.gridTemplateColumns = `repeat(${state.w}, 1fr)`
       board.style.setProperty('--cols', String(state.w))
+      board.style.setProperty('--rows', String(state.h))
       cellEls = []
       shown = []
       for (let i = 0; i < state.cells.length; i++) {

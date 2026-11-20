@@ -61,12 +61,17 @@ body {
   position: relative;
   padding: var(--cc-space-2) var(--cc-space-3);
   container-type: inline-size;
+  /* A board wider than the panel (Huge, Wide in a side zone) scrolls sideways instead of shrinking its cells. */
+  overflow-x: auto;
 }
-/* Square boards: in a short panel (a bottom zone) the board shrinks to the height left, not past 180 px. */
+/* The board fills the width, but in a short panel (a bottom zone) it shrinks to the height left (scaled by
+   columns over rows, so a wide board stays wide), not past 180 px; and never below 16 px a cell, where it
+   scrolls sideways in .boardwrap instead. */
 .board {
   display: grid;
   gap: 2px;
-  width: min(100%, max(180px, calc(100vh - 120px)));
+  width: min(100%, max(180px, calc((100vh - 120px) * var(--cols, 12) / var(--rows, 12))));
+  min-width: calc(var(--cols, 12) * 18px);
   margin: 0 auto;
   user-select: none;
   touch-action: manipulation;

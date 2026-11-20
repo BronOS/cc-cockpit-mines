@@ -27,12 +27,13 @@ function boardWith(size, mineCells) {
   return g
 }
 
-test('sizes: small 9x9/10, medium 12x12/22, large 16x16/40; junk falls back to medium', () => {
+test('sizes: small 9x9/10, medium 12x12/22, large 16x16/40, huge 24x24/99, wide 30x16/99; junk falls back to medium', () => {
   assert.deepEqual(
     G.SIZE_IDS.map((id) => [id, G.SIZES[id].w, G.SIZES[id].h, G.SIZES[id].mines]),
-    [['small', 9, 9, 10], ['medium', 12, 12, 22], ['large', 16, 16, 40]],
+    [['small', 9, 9, 10], ['medium', 12, 12, 22], ['large', 16, 16, 40], ['huge', 24, 24, 99], ['wide', 30, 16, 99]],
   )
   assert.equal(G.newGame('large').cells.length, 256)
+  assert.equal(G.newGame('wide').cells.length, 480)
   assert.equal(G.newGame('__proto__').size, 'medium')
   assert.equal(G.newGame(undefined).size, 'medium')
   assert.equal(G.isSize('toString'), false)
