@@ -1,0 +1,193 @@
+/* Mines panel. Colours only from the app's theme variables (ccc guide panels), so light and dark themes and any
+   plugin theme work. A cell's state is told by shape as well as colour: a hidden cell is a filled tile, an open
+   one only an outline; numbers are digits, their colour only helps. */
+
+html,
+body {
+  margin: 0;
+  background: var(--cc-bg);
+  color: var(--cc-fg);
+  font: var(--cc-text-m) / 1.4 var(--cc-font-ui);
+}
+* {
+  box-sizing: border-box;
+}
+
+.mines {
+  display: flex;
+  flex-direction: column;
+  min-width: 200px;
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: var(--cc-space-2);
+  padding: var(--cc-space-2) var(--cc-space-3) 0;
+  font-variant-numeric: tabular-nums;
+}
+.bar .grow {
+  flex: 1;
+}
+.bar select {
+  min-width: 0;
+  max-width: 100%;
+}
+.stat {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--cc-space-1);
+  font-weight: 600;
+  min-width: 3.5em;
+}
+.stat svg {
+  width: 14px;
+  height: 14px;
+  color: var(--cc-fg-muted);
+}
+.mode {
+  display: inline-flex;
+  gap: var(--cc-space-1);
+}
+/* The chip that is on carries a heavier weight and the accent fill, not only a colour change. */
+.mode .cc-chip[aria-pressed='true'] {
+  background: var(--cc-accent);
+  border-color: var(--cc-accent);
+  color: var(--cc-accent-fg);
+  font-weight: 600;
+}
+
+.boardwrap {
+  position: relative;
+  padding: var(--cc-space-2) var(--cc-space-3);
+  container-type: inline-size;
+}
+/* Square boards: in a short panel (a bottom zone) the board shrinks to the height left, not past 180 px. */
+.board {
+  display: grid;
+  gap: 2px;
+  width: min(100%, max(180px, calc(100vh - 120px)));
+  margin: 0 auto;
+  user-select: none;
+  touch-action: manipulation;
+  border-radius: var(--cc-radius-s);
+  outline: none;
+}
+.board:focus-visible {
+  box-shadow: 0 0 0 2px var(--cc-focus);
+}
+.board:empty {
+  display: none;
+}
+
+.c {
+  aspect-ratio: 1;
+  border-radius: 3px;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  /* About half a cell, from the board's width (container units of .boardwrap). */
+  font-size: clamp(9px, calc(55cqi / var(--cols, 12)), 16px);
+  line-height: 1;
+  position: relative;
+  cursor: pointer;
+  /* A hidden cell is a tile clearly lifted off the page in any theme (a little of the text colour mixed in). */
+  background: color-mix(in srgb, var(--cc-surface-3), var(--cc-fg) 10%);
+  border: 1px solid var(--cc-border-strong);
+}
+.c:hover {
+  background: color-mix(in srgb, var(--cc-surface-3), var(--cc-fg) 22%);
+}
+.c.open {
+  background: transparent;
+  border-color: var(--cc-border);
+  cursor: default;
+}
+.c.kb {
+  outline: 2px solid var(--cc-focus);
+  outline-offset: -2px;
+}
+.c svg {
+  width: 66%;
+  height: 66%;
+  pointer-events: none;
+}
+.c .cloth {
+  fill: var(--cc-status-ended);
+}
+.c.boom {
+  background: var(--cc-status-ended);
+  border-color: var(--cc-status-ended);
+  color: var(--cc-bg);
+}
+.c.wrong::after {
+  content: '✕';
+  position: absolute;
+  color: var(--cc-status-ended);
+  font-size: 130%;
+}
+
+.n1 { color: var(--cc-project-blue); }
+.n2 { color: var(--cc-project-green); }
+.n3 { color: var(--cc-project-red); }
+.n4 { color: var(--cc-project-purple); }
+.n5 { color: var(--cc-project-orange); }
+.n6 { color: var(--cc-project-teal); }
+.n7 { color: var(--cc-fg); }
+.n8 { color: var(--cc-fg-muted); }
+
+.cover {
+  position: absolute;
+  inset: var(--cc-space-2) var(--cc-space-3);
+  border-radius: var(--cc-radius-m);
+  background: color-mix(in srgb, var(--cc-bg) 90%, transparent);
+  border: 1px solid var(--cc-border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--cc-space-2);
+  text-align: center;
+  padding: var(--cc-space-3);
+}
+.cover[hidden] {
+  display: none;
+}
+.cover .big {
+  font-size: var(--cc-text-l);
+  font-weight: 700;
+}
+.cover .what {
+  color: var(--cc-fg-muted);
+  overflow-wrap: anywhere;
+}
+.cover .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--cc-status-waiting);
+  display: inline-block;
+  margin-right: 6px;
+}
+.cover.lost .big {
+  color: var(--cc-status-ended);
+}
+.cover.won .big {
+  color: var(--cc-status-waiting);
+}
+.cover .buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--cc-space-2);
+}
+
+.foot {
+  padding: 0 var(--cc-space-3) var(--cc-space-3);
+  color: var(--cc-fg-muted);
+  font-size: var(--cc-text-s);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--cc-space-1) var(--cc-space-3);
+}
