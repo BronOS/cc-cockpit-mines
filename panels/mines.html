@@ -11,11 +11,8 @@
   </head>
   <body>
     <div class="mines">
-      <div class="bar">
-        <select id="size" title="Board size" aria-label="Board size"></select>
-        <span class="grow"></span>
-        <button id="new" type="button" title="New game (N)">New</button>
-      </div>
+      <!-- Opened by the header's Board size button (the host posts sizeMenu); New game is in the header too. -->
+      <div class="sizemenu" id="sizemenu" role="menu" aria-label="Board size" hidden></div>
       <div class="bar">
         <span class="stat" title="Mines left">
           <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="6" fill="currentColor" /><path d="M12 3v4M12 19v2M3 13h3M18 13h3M5.6 6.6l2.1 2.1M16.3 17.3l2.1 2.1M5.6 19.4l2.1-2.1M16.3 8.7l2.1-2.1" stroke="currentColor" stroke-width="2" /></svg>

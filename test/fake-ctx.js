@@ -36,6 +36,8 @@ function fakeCtx({ sessions = [], appStorage = true } = {}) {
     throw new Error(`Mines must not call ${name}`)
   }
 
+  const headers = []
+  const actionListeners = new Map()
   const ctx = {
     api: 1,
     pluginId: MANIFEST.id,
@@ -58,6 +60,17 @@ function fakeCtx({ sessions = [], appStorage = true } = {}) {
         if (!PANELS.has(panelId)) throw new TypeError(`unknown panel ${panelId}`)
         panelListeners.set(panelId, fn)
         return () => panelListeners.delete(panelId)
+      },
+      // The guide's limits: up to 3 actions, ids unique, icons built in or an .svg of the plugin.
+      header(panelId, spec) {
+        if (!PANELS.has(panelId)) throw new TypeError(`unknown panel ${panelId}`)
+        if (spec && (spec.actions || []).length > 3) throw new TypeError('too many actions')
+        headers.push(structuredClone(spec))
+      },
+      onAction(panelId, fn) {
+        if (!PANELS.has(panelId)) throw new TypeError(`unknown panel ${panelId}`)
+        actionListeners.set(panelId, fn)
+        return () => actionListeners.delete(panelId)
       },
     },
     sessions: {
@@ -82,6 +95,9 @@ function fakeCtx({ sessions = [], appStorage = true } = {}) {
   return {
     ctx,
     posts,
+    headers,
+    /** A click on a header action; resolves when the host's listener settled. */
+    click: (id) => actionListeners.get('mines')(id),
     focused,
     logs,
     /** What the page in `view` sends; resolves when the host's listener settled. */

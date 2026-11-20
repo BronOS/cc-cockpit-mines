@@ -8,7 +8,7 @@
 // pause and `ctx.sessions.focus` for the person's own Go to the tab click.
 
 const { createController } = require('../lib/controller.js')
-const { isSize, SIZE_IDS } = require('../lib/game.js')
+const { isSize, SIZE_IDS, SIZES } = require('../lib/game.js')
 
 const PANEL = 'mines'
 const BEST_KEY = (size) => `best:${size}`
@@ -21,7 +21,31 @@ exports.activate = (ctx) => {
   // ctx.appStorage keeps them per project instead.
   const store = typeof ctx.appStorage === 'object' && ctx.appStorage !== null ? ctx.appStorage : ctx.storage
   const controller = createController()
-  const push = () => ctx.panels.post(PANEL, { state: controller.snapshot() })
+  // The title bar: New game and Board size as icon buttons (the header takes no dropdown), the board in play as
+  // its muted text. Board size asks the page to open its own size menu under the header.
+  let headerMeta = ''
+  function header() {
+    const s = SIZES[controller.size()]
+    const meta = `${s.label} · ${s.w}×${s.h} · ${s.mines}`
+    if (meta === headerMeta) return
+    headerMeta = meta
+    try {
+      ctx.panels.header(PANEL, {
+        meta,
+        actions: [
+          { id: 'new', icon: 'refresh', title: 'New game (N)' },
+          { id: 'size', icon: 'icons/size.svg', title: 'Board size' },
+        ],
+      })
+    } catch (err) {
+      ctx.log.warn(`could not set the panel header: ${err && err.message}`)
+    }
+  }
+  const push = () => {
+    header()
+    ctx.panels.post(PANEL, { state: controller.snapshot() })
+  }
+  header()
   /** To the one page that asked (`from.view`), or to every view when the app gave none. */
   const answer = (message, from) =>
     from && typeof from.view === 'string' ? ctx.panels.post(PANEL, message, { view: from.view }) : ctx.panels.post(PANEL, message)
@@ -35,6 +59,7 @@ exports.activate = (ctx) => {
     if (!picked && isSize(size) && size !== controller.size() && controller.snapshot().status === 'ready') {
       controller.act({ act: 'new', size })
     }
+    header()
   }
   // activate's return value is ignored, so messages can come before the store answered: each waits for it.
   const loaded = load().catch((err) => ctx.log.warn(`could not read the best times: ${err && err.message}`))
@@ -51,6 +76,20 @@ exports.activate = (ctx) => {
     } catch (err) {
       ctx.log.warn(`could not save the best time: ${err && err.message}`)
     }
+  }
+
+  if (typeof ctx.panels.onAction === 'function') {
+    disposers.push(
+      ctx.panels.onAction(PANEL, async (id) => {
+        await loaded
+        if (id === 'new') {
+          if (controller.act({ act: 'new' }).changed) push()
+        } else if (id === 'size') {
+          // Every open view of the panel gets it: the click carries no view to answer.
+          ctx.panels.post(PANEL, { sizeMenu: true })
+        }
+      }),
+    )
   }
 
   disposers.push(

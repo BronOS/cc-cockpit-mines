@@ -174,3 +174,23 @@ test('the page: no inline script or handlers, relative URLs only, the SDK first'
   assert.ok(html.indexOf('src="view.js"') < html.indexOf('src="mines.js"'))
   assert.equal(/<form\b/i.test(html), false)
 })
+
+test('header: New game and Board size buttons, the board in play as its text', async () => {
+  const f = await started()
+  const h = f.headers.at(-1)
+  assert.equal(h.meta, 'Medium · 12×12 · 22')
+  assert.deepEqual(h.actions.map((a) => a.id), ['new', 'size'])
+  assert.ok(fs.existsSync(path.join(root, h.actions[1].icon)), 'the size icon is a file of the plugin')
+
+  await f.send({ act: 'new', size: 'wide' })
+  assert.equal(f.headers.at(-1).meta, 'Wide · 30×16 · 99')
+
+  await f.send({ act: 'open', i: 40 })
+  assert.equal(f.lastState().status, 'play')
+  await f.click('new')
+  assert.equal(f.lastState().status, 'ready', 'New game starts over')
+  assert.equal(f.lastState().size, 'wide', 'on the same board')
+
+  await f.click('size')
+  assert.deepEqual(f.posts.at(-1).message, { sizeMenu: true }, 'Board size opens the page menu')
+})

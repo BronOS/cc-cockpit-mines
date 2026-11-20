@@ -196,3 +196,37 @@ body {
   justify-content: space-between;
   gap: var(--cc-space-1) var(--cc-space-3);
 }
+
+/* The Board size menu, under the header at the right (the header's button opens it). */
+.mines { position: relative; }
+.sizemenu {
+  position: absolute;
+  top: var(--cc-space-1);
+  right: var(--cc-space-3);
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  min-width: 200px;
+  padding: var(--cc-space-1);
+  background: var(--cc-bg-menu);
+  border: 1px solid var(--cc-border-strong);
+  border-radius: var(--cc-radius-s);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+}
+.sizemenu button {
+  all: unset;
+  display: flex;
+  align-items: center;
+  gap: var(--cc-space-2);
+  padding: 4px var(--cc-space-2);
+  border-radius: var(--cc-radius-s);
+  cursor: pointer;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.sizemenu button:hover,
+.sizemenu button:focus-visible {
+  background: color-mix(in srgb, var(--cc-bg-menu), var(--cc-fg) 14%);
+}
+.sizemenu button[aria-checked='true'] { font-weight: 700; }
+.sizemenu .mark { width: 1em; text-align: center; }

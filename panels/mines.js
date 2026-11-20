@@ -29,19 +29,54 @@
     $('time').textContent = String(elapsedSeconds())
   }
 
+  // The size menu: opened by the header's Board size button, one row per board, the one in play checked.
+  const menu = $('sizemenu')
   function drawSizes() {
-    const select = $('size')
-    if (select.options.length !== state.sizes.length) {
-      select.textContent = ''
-      for (const s of state.sizes) {
-        const o = document.createElement('option')
-        o.value = s.id
-        o.textContent = V.sizeLabel(s)
-        select.append(o)
-      }
+    if (menu.hidden || !state) return
+    menu.textContent = ''
+    for (const sz of state.sizes) {
+      const item = document.createElement('button')
+      item.type = 'button'
+      item.setAttribute('role', 'menuitemradio')
+      item.setAttribute('aria-checked', String(sz.id === state.size))
+      item.dataset.size = sz.id
+      const mark = document.createElement('span')
+      mark.className = 'mark'
+      mark.textContent = sz.id === state.size ? '✓' : ''
+      item.append(mark, V.sizeLabel(sz))
+      menu.append(item)
     }
-    select.value = state.size
   }
+  function openMenu() {
+    if (!state) return
+    menu.hidden = false
+    drawSizes()
+    const current = menu.querySelector('[aria-checked="true"]') || menu.firstElementChild
+    if (current) current.focus()
+  }
+  function closeMenu() {
+    if (menu.hidden) return
+    menu.hidden = true
+  }
+  menu.addEventListener('click', (e) => {
+    const item = e.target.closest('button[data-size]')
+    if (!item) return
+    closeMenu()
+    post({ act: 'new', size: item.dataset.size })
+    board.focus()
+  })
+  menu.addEventListener('keydown', (e) => {
+    const items = [...menu.querySelectorAll('button')]
+    const at = items.indexOf(document.activeElement)
+    if (e.key === 'Escape') closeMenu()
+    else if (e.key === 'ArrowDown') items[(at + 1) % items.length].focus()
+    else if (e.key === 'ArrowUp') items[(at - 1 + items.length) % items.length].focus()
+    else return
+    e.preventDefault()
+  })
+  document.addEventListener('pointerdown', (e) => {
+    if (!menu.hidden && !menu.contains(e.target)) closeMenu()
+  })
 
   // The cells are kept and updated in place, never rebuilt on a state or a focus change: a click whose element
   // went between its mousedown and mouseup (the board taking focus redrew it) would land on the board, not a cell.
@@ -156,6 +191,10 @@
 
   ccPanel.onMessage((message) => {
     if (!message || typeof message !== 'object') return
+    if (message.sizeMenu) {
+      menu.hidden ? openMenu() : closeMenu()
+      return
+    }
     if (message.state) {
       state = message.state
       shownAt = performance.now()
@@ -230,6 +269,4 @@
   }
   $('mOpen').addEventListener('click', () => setMode(false))
   $('mFlag').addEventListener('click', () => setMode(true))
-  $('new').addEventListener('click', () => post({ act: 'new' }))
-  $('size').addEventListener('change', (e) => post({ act: 'new', size: e.target.value }))
 })()
