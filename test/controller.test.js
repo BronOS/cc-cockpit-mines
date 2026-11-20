@@ -144,7 +144,7 @@ test('a win stops the clock and records the best time per size in whole seconds'
   assert.equal(s.running, false)
   assert.equal(s.elapsedMs, 12_700)
   assert.equal(s.record, true)
-  assert.deepEqual(s.best, { small: 12, medium: null, large: null })
+  assert.deepEqual(s.best, { small: 12, medium: null, large: null, huge: null, wide: null })
 })
 
 test('records: a faster win replaces the best, a slower or equal one does not', () => {
@@ -160,7 +160,7 @@ test('records: a faster win replaces the best, a slower or equal one does not', 
 test('stored best times: only valid numbers, and only lower than what is known', () => {
   const { ctl, winOnce } = winner()
   assert.equal(ctl.setBest({ small: 30, medium: 'x', large: -1 }), true)
-  assert.deepEqual(ctl.snapshot().best, { small: 30, medium: null, large: null })
+  assert.deepEqual(ctl.snapshot().best, { small: 30, medium: null, large: null, huge: null, wide: null })
   assert.equal(ctl.setBest({ small: 40 }), false)
   assert.equal(ctl.setBest(null), false)
   assert.equal(winOnce(35_000), undefined, 'slower than the stored best')

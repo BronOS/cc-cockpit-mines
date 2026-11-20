@@ -113,7 +113,7 @@ test('without ctx.appStorage the records go to ctx.storage', async () => {
 test('junk from the page is ignored', async () => {
   const f = await started()
   const n = f.posts.length
-  for (const m of [null, 'x', 5, {}, { act: 'open', i: -4 }, { act: 'new', size: 'huge' }, { act: 'goto' }, { act: 'resume' }]) {
+  for (const m of [null, 'x', 5, {}, { act: 'open', i: -4 }, { act: 'new', size: 'gigantic' }, { act: 'goto' }, { act: 'resume' }]) {
     await f.send(m)
   }
   assert.equal(f.posts.length, n)
